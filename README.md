@@ -1,1 +1,1 @@
-# minimal.hts-connector
+# hts-connector
