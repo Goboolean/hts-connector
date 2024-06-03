@@ -43,7 +43,7 @@ jobs:
           ${{ runner.os }}-cargo-build-
 
     - name: Run Clippy
-      run: make ci
+      run: make lint
 
     - name: Build
       run: make build
