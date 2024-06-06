@@ -1,3 +1,4 @@
+.PHONY: test build lint
 test:
 	cargo test --verbose
 
