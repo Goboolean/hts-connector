@@ -26,11 +26,10 @@ jobs:
         image: influxdb:2.0
         ports:
           - 8086:8086
-        options: >
-          --name influxdb
-          -e DOCKER_INFLUXDB_INIT_ORG=${{ env.INFLUXDB_ORG }} \
-          -e DOCKER_INFLUXDB_INIT_BUCKET=${{ env.INFLUXDB_DB }} \
-          -e DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=${{ env.INFLUXDB_TOKEN }}
+        env:
+          DOCKER_INFLUXDB_INIT_ORG: ${{ env.INFLUXDB_ORG }}
+          DOCKER_INFLUXDB_INIT_BUCKET: ${{ env.INFLUXDB_DB }}
+          DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: ${{ env.INFLUXDB_TOKEN }}
 
     steps:
       - name: Checkout code
