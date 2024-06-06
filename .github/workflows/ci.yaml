@@ -9,11 +9,103 @@ on:
     - main
 
 jobs:
-  build:
+  test:
+    strategy:
+      matrix:
+        platform: [ubuntu-latest]
+    runs-on: ${{ matrix.platform }}
+    
+    env:
+      INFLUXDB_URL: http://localhost:8086
+      INFLUXDB_DB: sample-bucket
+      INFLUXDB_TOKEN: token
+      INFLUXDB_ORG: goboolean
+
+    services:
+      influxdb:
+        image: influxdb:2.0
+        ports:
+          - 8086:8086
+        env:
+          DOCKER_INFLUXDB_INIT_ORG: ${{ env.INFLUXDB_ORG }}
+          DOCKER_INFLUXDB_INIT_BUCKET: ${{ env.INFLUXDB_DB }}
+          DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: ${{ env.INFLUXDB_TOKEN }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+  
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+  
+      - name: Cache Cargo registry
+        uses: actions/cache@v2
+        with:
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-registry- 
+
+      - name: Cache Cargo build
+        uses: actions/cache@v2
+        with:
+          path: target
+          key: ${{ runner.os }}-cargo-build-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-build-
+
+      - name: Run tests
+        run: make test
+
+
+  test-windows:
     strategy:
       matrix:
         platform: [windows-latest]
+    runs-on: ${{ matrix.platform }}
     
+    env:
+      INFLUXDB_URL: http://localhost:8086
+      INFLUXDB_DB: sample-bucket
+      INFLUXDB_TOKEN: token
+      INFLUXDB_ORG: goboolean
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+  
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+  
+      - name: Cache Cargo registry
+        uses: actions/cache@v2
+        with:
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-registry- 
+
+      - name: Cache Cargo build
+        uses: actions/cache@v2
+        with:
+          path: target
+          key: ${{ runner.os }}-cargo-build-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-build-
+
+      - name: Run tests
+        run: make test
+
+  lint:
+    strategy:
+      matrix:
+        platform: [ubuntu-latest]
     runs-on: ${{ matrix.platform }}
 
     steps:
@@ -44,9 +136,3 @@ jobs:
 
     - name: Run Clippy
       run: make lint
-
-    - name: Build
-      run: make build
-
-    - name: Run tests
-      run: make test
