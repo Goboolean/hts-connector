@@ -12,8 +12,24 @@ jobs:
   test:
     strategy:
       matrix:
-        platform: [windows-latest]    
+        platform: [ubuntu-latest]
     runs-on: ${{ matrix.platform }}
+    
+    env:
+      INFLUXDB_URL: http://localhost:8086
+      INFLUXDB_DB: mydb
+      INFLUXDB_TOKEN: sample-token
+
+    services:
+      influxdb:
+        image: influxdb:2.0
+        ports:
+          - 8086:8086
+        options: >
+          --name influxdb
+          -e DOCKER_INFLUXDB_INIT_ORG=${{ env.INFLUXDB_ORG }} \
+          -e DOCKER_INFLUXDB_INIT_BUCKET=${{ env.INFLUXDB_DB }} \
+          -e DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=${{ env.INFLUXDB_TOKEN }}
 
     steps:
       - name: Checkout code
