@@ -1,6 +1,6 @@
 .PHONY: test build lint
 test:
-	cargo test --verbose
+	cargo test --verbose -- --test-threads=1
 
 build:
 	cargo build --verbose
