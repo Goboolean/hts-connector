@@ -47,9 +47,9 @@ mod tests {
     fn test_influx_config_success() {
         // Arrange
         const INFLUXDB_URL: &str = "http://localhost:8086";
-        const INFLUXDB_TOKEN: &str = "my_token";
-        const INFLUXDB_ORG: &str = "my_org";
-        const INFLUXDB_BUCKET: &str = "my_bucket";
+        const INFLUXDB_TOKEN: &str = "token";
+        const INFLUXDB_ORG: &str = "goboolean";
+        const INFLUXDB_BUCKET: &str = "sample-bucket";
 
         env::set_var("INFLUXDB_URL", INFLUXDB_URL);
         env::set_var("INFLUXDB_TOKEN", INFLUXDB_TOKEN);
