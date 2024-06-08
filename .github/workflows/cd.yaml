@@ -4,8 +4,8 @@ on:
   push:
     tags:
       - v*
-    branches:
-      - chore/cd
+  workflow_dispatch:
+
 
 jobs:
   build:
