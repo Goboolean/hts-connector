@@ -76,6 +76,9 @@ jobs:
           toolchain: stable
           override: true
   
+      - name: Install cargo-make
+        run: cargo install cargo-make
+
       - name: Cache Cargo registry
         uses: actions/cache@v2
         with:
