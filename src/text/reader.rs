@@ -16,7 +16,7 @@ pub trait Handler: Send + Sync  {
     fn handle(&self, candle: Candle) -> Result<(), io::Error>;
 }
 
-struct Reader {
+pub struct Reader {
     path: String,
     handler: Box<dyn Handler>,
 }
@@ -30,7 +30,7 @@ impl Reader {
         Ok(Reader { path: config.path, handler })
     }
 
-    fn read_and_follow(&self, duration: Duration) -> io::Result<()> {
+    pub fn read_and_follow(&self, duration: Duration) -> io::Result<()> {
         let start = Instant::now();
 
         let file = OpenOptions::new()

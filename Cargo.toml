@@ -16,6 +16,7 @@ rinfluxdb-lineprotocol = { version = "0.2.0", features = ["client"] }
 rinfluxdb-influxql = { version = "0.2.0", features = ["client"] }
 mockall = "0.10" 
 scopeguard = "1.1"
+tokio = { version = "1", features = ["full"] }
 
 [dev-dependencies]
 tokio = { version = "1", features = ["full"] }
