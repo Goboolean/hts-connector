@@ -76,8 +76,6 @@ impl Reader {
                     low: parts[5].parse().unwrap(),
                     close: parts[6].parse().unwrap(),
                 };
-
-                println!("{:?}", candle);
                 
                 match self.handler.handle(candle) {
                     Ok(_) => (),

@@ -40,8 +40,6 @@ mod tests {
         // Act
         let config = Config::new();
 
-        println!("{:?}", config);
-
         // Assert
         assert!(config.is_err());
     }

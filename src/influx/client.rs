@@ -10,12 +10,12 @@ pub struct Client {
 
 impl Client {
     pub async fn new(config: Config) -> Result<Self, influxdb::Error> {
-        let client = InfluxClient::new(&config.url, &config.bucket).with_token(&config.token);
-        let new_client = Client { client };
+        let influx_client = InfluxClient::new(&config.url, &config.bucket).with_token(&config.token);
+        let client = Client { client: influx_client };
 
-        new_client.ping().await?;
+        client.ping().await?;
 
-        Ok(new_client)
+        Ok(client)
     }
 
     pub async fn ping(&self) -> Result<(), influxdb::Error> {

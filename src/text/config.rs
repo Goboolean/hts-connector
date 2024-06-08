@@ -44,7 +44,6 @@ mod tests {
 
         // Act
         let config = Config::new().expect("Failed to create config");
-        println!("{:?}", config);
 
         // Assert
         assert_eq!(config.path, TEXT_FILE_PATH);
