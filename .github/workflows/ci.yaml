@@ -93,6 +93,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-cargo-build-
 
+      - name: Build project
+        run: make build
+
       - name: Run tests
         run: make test
 
@@ -124,6 +127,9 @@ jobs:
 
     - name: Discover files
       run: find . -type f ! -name ".*"
+
+    - name: Build project
+      run: make build
 
     - name: Run Clippy
       run: make lint
