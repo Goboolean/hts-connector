@@ -1,5 +1,5 @@
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct Candle {
     pub name: String,
     pub timestamp: u128,

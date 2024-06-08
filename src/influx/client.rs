@@ -3,7 +3,7 @@ use influxdb::WriteQuery;
 use crate::model::candle::Candle;
 use crate::influx::config::Config;
 
-struct Client {
+pub struct Client {
     client: InfluxClient,
 }
 
@@ -57,8 +57,6 @@ mod tests {
 
         // Act
         let result = client.insert_data(candle).await;
-
-        println!("{:?}", result);
 
         // Assert
         assert!(result.is_ok());
