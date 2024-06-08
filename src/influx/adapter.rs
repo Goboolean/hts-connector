@@ -17,7 +17,7 @@ impl InfluxHandler {
 
 impl Handler for InfluxHandler {
     fn handle(&self, candle: Candle) -> Result<(), io::Error> {
-        print!("data received: {:?}", candle);
+        println!("data received: {:?}", candle);
 
         let runtime = Runtime::new().map_err(|e| {
             io::Error::new(
