@@ -7,6 +7,17 @@ args = [
     "--",
 ]
 
+[tasks.test-sensitive]
+command = "cargo"
+env = { RUSTFLAGS = "-A dead_code" }
+args = [
+    "test",
+    "--all-targets",
+    "--",
+    "--ignored",
+    "--test-threads=1"
+]
+
 [tasks.test-debug]
 command = "cargo"
 env = { RUSTFLAGS = "-A dead_code" }

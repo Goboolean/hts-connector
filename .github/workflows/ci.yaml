@@ -65,7 +65,9 @@ jobs:
             ${{ runner.os }}-cargo-build-
 
       - name: Run tests
-        run: cargo make test
+        run: |
+          cargo make test
+          cargo make test-sensitive
 
   test-windows:
     strategy:
@@ -109,7 +111,9 @@ jobs:
             ${{ runner.os }}-cargo-build-          
 
       - name: Run tests
-        run: cargo make test
+        run: |
+          cargo make test
+          cargo make test-sensitive
 
   lint:
     strategy:
@@ -140,8 +144,8 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-cargo-build-
 
-    - name: Run Clippy
-      run: cargo make lint
-
     - name: Run build
       run: cargo make build
+
+    - name: Run Clippy
+      run: cargo make lint
