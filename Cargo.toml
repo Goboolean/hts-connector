@@ -2,6 +2,11 @@
 name = "hts_connector"
 version = "0.1.0"
 edition = "2021"
+license = "MIT"
+repository = "https://github.com/Goboolean/hts-connector"
+keywords = ["goboolean", "quant", "rust"]
+categories = ["goboolean", "quant"]
+description = "A connector that fetches data from the HTS service and dumps it into InfluxDB"
 
 [dependencies]
 influxdb = "0.7.2"

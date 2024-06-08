@@ -36,6 +36,15 @@ args = [
     "--all-features",
     "--",
     "-D", "warnings",
+    "-D", "clippy::all",
+    "-D", "clippy::pedantic",
+    "-D", "clippy::nursery",
+    "-D", "clippy::cargo",
+    "-D", "clippy::complexity",
+    "-D", "clippy::correctness",
+    "-D", "clippy::style",
+    "-D", "clippy::perf",
+    "-D", "clippy::restriction",
     "-A", "dead_code"
 ]
 
