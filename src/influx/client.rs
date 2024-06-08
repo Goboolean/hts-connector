@@ -2,7 +2,6 @@ use influxdb::Client as InfluxClient;
 use influxdb::WriteQuery;
 use crate::model::candle::Candle;
 use crate::influx::config::Config;
-use influxdb::ReadQuery;
 
 struct Client {
     client: InfluxClient,

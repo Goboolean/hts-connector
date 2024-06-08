@@ -17,7 +17,7 @@ jobs:
     
     env:
       INFLUXDB_URL: http://localhost:8086
-      INFLUXDB_DB: sample-bucket
+      INFLUXDB_BUCKET: sample-bucket
       INFLUXDB_TOKEN: token
       INFLUXDB_ORG: goboolean
 
@@ -28,7 +28,7 @@ jobs:
           - 8086:8086
         env:
           DOCKER_INFLUXDB_INIT_ORG: ${{ env.INFLUXDB_ORG }}
-          DOCKER_INFLUXDB_INIT_BUCKET: ${{ env.INFLUXDB_DB }}
+          DOCKER_INFLUXDB_INIT_BUCKET: ${{ env.INFLUXDB_BUCKET }}
           DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: ${{ env.INFLUXDB_TOKEN }}
 
     steps:
@@ -53,6 +53,14 @@ jobs:
           key: ${{ runner.os }}-cargo-build-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: |
             ${{ runner.os }}-cargo-build-
+
+      - name: Cache Cargo bin
+        uses: actions/cache@v2
+        with:
+          path: ~/.cargo/bin
+          key: ${{ runner.os }}-cargo-bin-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-bin-
 
       - name: Run tests
         run: cargo make test
@@ -98,6 +106,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-cargo-build-
 
+      - name: Cache Cargo bin
+        uses: actions/cache@v2
+        with:
+          path: ~/.cargo/bin
+          key: ${{ runner.os }}-cargo-bin-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-bin-              
+
       - name: Run tests
         run: cargo make test
 
@@ -129,7 +145,15 @@ jobs:
         key: ${{ runner.os }}-cargo-build-${{ hashFiles('**/Cargo.lock') }}
         restore-keys: |
           ${{ runner.os }}-cargo-build-
-            
+
+    - name: Cache Cargo bin
+      uses: actions/cache@v2
+      with:
+        path: ~/.cargo/bin
+        key: ${{ runner.os }}-cargo-bin-${{ hashFiles('**/Cargo.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-cargo-bin-
+
     - name: Run Clippy
       run: cargo make lint
 
