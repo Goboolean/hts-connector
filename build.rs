@@ -2,7 +2,7 @@ use std::env;
 use dotenv::dotenv;
 
 fn main() {
-    dotenv().ok();
+    dotenv().expect("Failed to read .env file");
 
     env::var("INFLUXDB_URL").expect("INFLUX_URL must be set");
     env::var("INFLUXDB_BUCKET").expect("INFLUX_BUCKET must be set");
