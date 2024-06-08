@@ -1,18 +1,27 @@
 [tasks.test]
 command = "cargo"
+env = { RUSTFLAGS = "-A dead_code" }
 args = [
     "test",
     "--all-targets",
-    "--verbose",
     "--",
-    "--test-threads=1"
+]
+
+[tasks.test-debug]
+command = "cargo"
+env = { RUSTFLAGS = "-A dead_code" }
+args = [
+    "test",
+    "--all-targets",
+    "--",
+    "--nocapture"
 ]
 
 [tasks.build]
 command = "cargo"
+env = { RUSTFLAGS = "-A dead_code" }
 args = [
     "build",
-    "--verbose"
 ]
 
 [tasks.lint]
