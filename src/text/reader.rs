@@ -2,12 +2,15 @@ use std::fs::{File, OpenOptions};
 use std::io::{self, BufRead, BufReader, Seek};
 use std::thread;
 use std::time::{Duration, Instant};
+use chrono::{NaiveDate, NaiveTime, NaiveDateTime};
 
 use crate::text::config::Config;
 use crate::model::candle::Candle;
 
 use mockall::*;
 use mockall::predicate::*;
+use chrono_tz::Asia::Seoul;
+
 
 
 
@@ -54,21 +57,27 @@ impl Reader {
             } {
                 let parts: Vec<String> = line.split_whitespace().map(|s| s.to_string()).collect();
 
-                if parts.len() != 6 {
+                if parts.len() != 7 {
                     return Err(io::Error::new(
                         io::ErrorKind::InvalidData,
                         format!("Expected 6 parts, found {}", parts.len())
                     ));
                 }
-                
+
+                let date = NaiveDate::parse_from_str(&parts[0], "%Y-%m-%d").expect("Failed to parse date");
+                let time = NaiveTime::parse_from_str(&parts[1], "%H:%M:%S").expect("Failed to parse time");
+                let datetime: NaiveDateTime = NaiveDateTime::new(date, time);
+
                 let candle = Candle {
-                    timestamp: parts[0].parse().unwrap(),
-                    name: parts[1].parse().unwrap(),
-                    open: parts[2].parse().unwrap(),
-                    high: parts[3].parse().unwrap(),
-                    low: parts[4].parse().unwrap(),
-                    close: parts[5].parse().unwrap(),
+                    timestamp: datetime.and_local_timezone(Seoul).unwrap().timestamp() as u128,
+                    name: parts[2].parse().unwrap(),
+                    open: parts[3].parse().unwrap(),
+                    high: parts[4].parse().unwrap(),
+                    low: parts[5].parse().unwrap(),
+                    close: parts[6].parse().unwrap(),
                 };
+
+                println!("{:?}", candle);
                 
                 match self.handler.handle(candle) {
                     Ok(_) => (),
@@ -157,9 +166,9 @@ mod tests {
         env::set_var("TEXT_FILE_PATH", TEXT_FILE_PATH);
 
         let datas: [&str; 3] = [
-            "1 BTCUSDT 100.0 200.0 50.0 150.0",
-            "2 BTCUSDT 150.0 250.0 100.0 200.0",
-            "3 BTCUSDT 200.0 300.0 150.0 250.0",
+            "2024-04-30 13:21:00  test 368.850000 368.900000 368.750000 368.700000",
+            "2024-04-30 13:22:00  test 368.800000 368.800000 368.700000 368.650000",
+            "2024-04-30 13:23:00  test 368.750000 368.850000 368.800000 368.750000",
         ];
         let mut file = OpenOptions::new()
             .append(true)
@@ -177,28 +186,28 @@ mod tests {
 
         let candles: [Candle; 3] = [
             Candle {
-                timestamp: 1,
-                name: "BTCUSDT".to_string(),
-                open: 100.0,
-                high: 200.0,
-                low: 50.0,
-                close: 150.0,
+                timestamp: 1714450860,
+                name: "test".to_string(),
+                open: 368.850000,
+                high: 368.900000,
+                low: 368.750000,
+                close: 368.700000,
             },
             Candle {
-                timestamp: 2,
-                name: "BTCUSDT".to_string(),
-                open: 150.0,
-                high: 250.0,
-                low: 100.0,
-                close: 200.0,
+                timestamp: 1714450920,
+                name: "test".to_string(),
+                open: 368.800000,
+                high: 368.800000,
+                low: 368.700000,
+                close: 368.650000,
             },
             Candle {
-                timestamp: 3,
-                name: "BTCUSDT".to_string(),
-                open: 200.0,
-                high: 300.0,
-                low: 150.0,
-                close: 250.0,
+                timestamp: 1714450980,
+                name: "test".to_string(),
+                open: 368.750000,
+                high: 368.850000,
+                low: 368.800000,
+                close: 368.750000,
             },
         ];
 
