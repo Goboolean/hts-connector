@@ -35,12 +35,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
   
-      - name: Install Rust
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          override: true
-  
       - name: Cache Cargo registry
         uses: actions/cache@v2
         with:
@@ -111,12 +105,6 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
-
-    - name: Install Rust
-      uses: actions-rs/toolchain@v1
-      with:
-        toolchain: stable
-        override: true
 
     - name: Cache Cargo registry
       uses: actions/cache@v2
