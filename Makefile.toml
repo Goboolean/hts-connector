@@ -1,6 +1,8 @@
+[env]
+RUSTFLAGS = "-A dead_code" 
+
 [tasks.test]
 command = "cargo"
-env = { RUSTFLAGS = "-A dead_code" }
 args = [
     "test",
     "--all-targets",
@@ -9,7 +11,6 @@ args = [
 
 [tasks.test-sensitive]
 command = "cargo"
-env = { RUSTFLAGS = "-A dead_code" }
 args = [
     "test",
     "--all-targets",
@@ -20,7 +21,6 @@ args = [
 
 [tasks.test-debug]
 command = "cargo"
-env = { RUSTFLAGS = "-A dead_code" }
 args = [
     "test",
     "--all-targets",
@@ -41,14 +41,12 @@ args = [
 
 [tasks.build]
 command = "cargo"
-env = { RUSTFLAGS = "-A dead_code" }
 args = [
     "build",
 ]
 
 [tasks.build-release]
 command = "cargo"
-env = { RUSTFLAGS = "-A dead_code" }
 args = [
     "build",
     "--release"
