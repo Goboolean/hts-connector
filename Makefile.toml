@@ -1,0 +1,27 @@
+[tasks.test]
+command = "cargo"
+args = [
+    "test",
+    "--all-targets",
+    "--verbose",
+    "--",
+    "--test-threads=1"
+]
+
+[tasks.build]
+command = "cargo"
+args = [
+    "build",
+    "--verbose"
+]
+
+[tasks.lint]
+command = "cargo"
+args = [
+    "clippy",
+    "--all-targets",
+    "--all-features",
+    "--",
+    "-D", "warnings",
+    "-A", "dead_code"
+]

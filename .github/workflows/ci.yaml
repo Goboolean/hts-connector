@@ -52,7 +52,7 @@ jobs:
             ${{ runner.os }}-cargo-build-
 
       - name: Run tests
-        run: make test
+        run: cargo make test
 
   test-windows:
     strategy:
@@ -93,7 +93,7 @@ jobs:
             ${{ runner.os }}-cargo-build-
 
       - name: Run tests
-        run: make test
+        run: cargo make test
 
   lint:
     strategy:
@@ -120,6 +120,9 @@ jobs:
         key: ${{ runner.os }}-cargo-build-${{ hashFiles('**/Cargo.lock') }}
         restore-keys: |
           ${{ runner.os }}-cargo-build-
-
+            
     - name: Run Clippy
-      run: cargo clippy --all-targets --all-features -- -D warnings
+      run: cargo make lint
+
+    - name: Run build
+      run: cargo make build
