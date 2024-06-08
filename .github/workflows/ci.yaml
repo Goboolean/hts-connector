@@ -52,7 +52,7 @@ jobs:
             ${{ runner.os }}-cargo-build-
 
       - name: Run tests
-        run: make test
+        run: cargo test --verbose -- --test-threads=1
 
 
   test-windows:
@@ -128,8 +128,5 @@ jobs:
     - name: Discover files
       run: find . -type f ! -name ".*"
 
-    - name: Build project
-      run: make build
-
     - name: Run Clippy
-      run: make lint
+      run: cargo clippy --all-targets --all-features -- -D warnings
