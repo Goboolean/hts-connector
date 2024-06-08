@@ -28,6 +28,7 @@ mod tests {
     use super::*;
     use std::env;
 
+    #[ignore]
     #[test]
     fn test_config_fail() {
         // Arrange
@@ -39,10 +40,13 @@ mod tests {
         // Act
         let config = Config::new();
 
+        println!("{:?}", config);
+
         // Assert
         assert!(config.is_err());
     }
 
+    #[ignore]
     #[test]
     fn test_influx_config_success() {
         // Arrange

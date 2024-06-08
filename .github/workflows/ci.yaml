@@ -17,30 +17,37 @@ jobs:
     
     env:
       INFLUXDB_URL: http://localhost:8086
-      INFLUXDB_DB: sample-bucket
+      INFLUXDB_BUCKET: bucket
       INFLUXDB_TOKEN: token
-      INFLUXDB_ORG: goboolean
+      INFLUXDB_ORG: org
 
     services:
       influxdb:
-        image: influxdb:2.0
+        image: influxdb:latest
         ports:
           - 8086:8086
         env:
+          DOCKER_INFLUXDB_INIT_MODE: setup
+          DOCKER_INFLUXDB_INIT_USERNAME: admin
+          DOCKER_INFLUXDB_INIT_PASSWORD: password
           DOCKER_INFLUXDB_INIT_ORG: ${{ env.INFLUXDB_ORG }}
-          DOCKER_INFLUXDB_INIT_BUCKET: ${{ env.INFLUXDB_DB }}
+          DOCKER_INFLUXDB_INIT_BUCKET: ${{ env.INFLUXDB_BUCKET }}
           DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: ${{ env.INFLUXDB_TOKEN }}
 
     steps:
+      - name: Issue Token
+        run: |
+          sleep 5
+          CONTAINER_ID=$(docker ps | grep 'influxdb:latest' | awk '{print $1}')
+          OUTPUT=$(docker exec ${CONTAINER_ID} influx auth create --org org --read-buckets --write-buckets --description "New token for testing")
+          INFLUXDB_TOKEN=$(echo ${OUTPUT} | grep 'New token for testing' | awk '{print $6}')
+
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
   
-      - name: Install Rust
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          override: true
-  
+      - name: Install cargo-make
+        run: cargo install cargo-make
+
       - name: Cache Cargo registry
         uses: actions/cache@v2
         with:
@@ -58,8 +65,7 @@ jobs:
             ${{ runner.os }}-cargo-build-
 
       - name: Run tests
-        run: make test
-
+        run: cargo make test
 
   test-windows:
     strategy:
@@ -69,7 +75,7 @@ jobs:
     
     env:
       INFLUXDB_URL: http://localhost:8086
-      INFLUXDB_DB: sample-bucket
+      INFLUXDB_BUCKET: sample-bucket
       INFLUXDB_TOKEN: token
       INFLUXDB_ORG: goboolean
 
@@ -83,6 +89,9 @@ jobs:
           toolchain: stable
           override: true
   
+      - name: Install cargo-make
+        run: cargo install cargo-make
+
       - name: Cache Cargo registry
         uses: actions/cache@v2
         with:
@@ -97,10 +106,10 @@ jobs:
           path: target
           key: ${{ runner.os }}-cargo-build-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: |
-            ${{ runner.os }}-cargo-build-
+            ${{ runner.os }}-cargo-build-          
 
       - name: Run tests
-        run: make test
+        run: cargo make test
 
   lint:
     strategy:
@@ -112,11 +121,8 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Install Rust
-      uses: actions-rs/toolchain@v1
-      with:
-        toolchain: stable
-        override: true
+    - name: Install cargo-make
+      run: cargo install cargo-make
 
     - name: Cache Cargo registry
       uses: actions/cache@v2
@@ -135,4 +141,7 @@ jobs:
           ${{ runner.os }}-cargo-build-
 
     - name: Run Clippy
-      run: make lint
+      run: cargo make lint
+
+    - name: Run build
+      run: cargo make build
