@@ -44,7 +44,7 @@ jobs:
             ${{ runner.os }}-cargo-build-
 
       - name: Build project
-        run: make build-release
+        run: cargo make build-release
 
       - name: Upload Release Asset (Windows)
         if: runner.os == 'Windows'
