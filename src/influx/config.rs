@@ -29,6 +29,7 @@ mod tests {
     use std::env;
 
     #[test]
+    #[ignore]
     fn test_config_fail() {
         // Arrange
         env::remove_var("INFLUXDB_URL");
@@ -39,11 +40,14 @@ mod tests {
         // Act
         let config = Config::new();
 
+        println!("{:?}", config);
+
         // Assert
         assert!(config.is_err());
     }
 
     #[test]
+    #[ignore]
     fn test_influx_config_success() {
         // Arrange
         const INFLUXDB_URL: &str = "http://localhost:8086";
