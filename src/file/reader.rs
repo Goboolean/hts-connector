@@ -1,5 +1,5 @@
 use std::fs::{File, OpenOptions};
-use std::io::{self, BufRead, BufReader, Seek, SeekFrom};
+use std::io::{self, BufRead, BufReader, Seek};
 use std::thread;
 use std::time::{Duration, Instant};
 
@@ -160,7 +160,7 @@ mod tests {
         ];
         let mut file = OpenOptions::new()
             .append(true)
-            .create(true) // Create the file if it doesn't exist
+            .create(true)
             .open(TEXT_FILE_PATH)
             .expect("Failed to open file");
 
