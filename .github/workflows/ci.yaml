@@ -52,9 +52,7 @@ jobs:
             ${{ runner.os }}-cargo-build-
 
       - name: Run tests
-        run: |
-          cargo test influx::config
-          cargo test influx::client
+        run: make test
 
   test-windows:
     strategy:
@@ -94,9 +92,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-cargo-build-
 
-      - name: Build project
-        run: make build
-
       - name: Run tests
         run: make test
 
@@ -125,9 +120,6 @@ jobs:
         key: ${{ runner.os }}-cargo-build-${{ hashFiles('**/Cargo.lock') }}
         restore-keys: |
           ${{ runner.os }}-cargo-build-
-
-    - name: Discover files
-      run: find . -type f ! -name ".*"
 
     - name: Run Clippy
       run: cargo clippy --all-targets --all-features -- -D warnings
