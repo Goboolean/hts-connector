@@ -1,4 +1,4 @@
-
+//! A connector that fetches data from the HTS service and dumps it into `InfluxDB`.
 
 fn main() {
     #[cfg(not(debug_assertions))]

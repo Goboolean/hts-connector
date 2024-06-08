@@ -11,7 +11,7 @@ pub struct Client {
 impl Client {
     pub async fn new(config: Config) -> Result<Self, influxdb::Error> {
         let influx_client = InfluxClient::new(&config.url, &config.bucket).with_token(&config.token);
-        let client = Client { client: influx_client };
+        let client = Self { client: influx_client };
 
         client.ping().await?;
 
@@ -36,9 +36,9 @@ impl Client {
 
 #[cfg(test)]
 #[cfg(not(target_os = "windows"))]
+#[allow(clippy::unreadable_literal)]
 mod tests {
     use super::*;
-    use chrono::Utc;
 
     #[tokio::test]
     async fn test_insert_data() {
@@ -47,7 +47,7 @@ mod tests {
         let client = Client::new(config).await.expect("Failed to create client");
 
         let candle = Candle {
-            timestamp: Utc::now().timestamp() as u128,
+            timestamp: 1714450980,
             name: "BTCUSDT".to_string(),
             open: 100.0,
             high: 200.0,

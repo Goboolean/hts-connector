@@ -7,8 +7,7 @@ use chrono::{NaiveDate, NaiveTime, NaiveDateTime};
 use crate::text::config::Config;
 use crate::model::candle::Candle;
 
-use mockall::*;
-use mockall::predicate::*;
+use mockall::automock;
 use chrono_tz::Asia::Seoul;
 
 
@@ -25,15 +24,17 @@ pub struct Reader {
 }
 
 impl Reader {
-    pub fn new(config: Config, handler: Box<dyn Handler>) -> io::Result<Self> {
+    pub fn new(config: Config, handler: Box<dyn Handler>) -> Result<Self, io::Error> {
         match File::open(&config.path) {
             Ok(_) => (),
             Err(e) => return Err(e),
         };
-        Ok(Reader { path: config.path, handler })
+        Ok(Self { path: config.path, handler })
     }
 
-    pub fn read_and_follow(&self, duration: Duration) -> io::Result<()> {
+    #[allow(clippy::unreadable_literal)]
+    #[allow(clippy::cast_sign_loss)]
+    pub fn read_and_follow(&self, duration: Duration) -> Result<(), io::Error> {
         let start = Instant::now();
 
         let file = OpenOptions::new()
@@ -70,15 +71,15 @@ impl Reader {
 
                 let candle = Candle {
                     timestamp: datetime.and_local_timezone(Seoul).unwrap().timestamp() as u128,
-                    name: parts[2].parse().unwrap(),
-                    open: parts[3].parse().unwrap(),
-                    high: parts[4].parse().unwrap(),
-                    low: parts[5].parse().unwrap(),
-                    close: parts[6].parse().unwrap(),
+                    name: parts[2].clone(),
+                    open: parts[3].parse().expect("Failed to parse open"),
+                    high: parts[4].parse().expect("Failed to parse high"),
+                    low: parts[5].parse().expect("Failed to parse low"),
+                    close: parts[6].parse().expect("Failed to parse close")
                 };
                 
                 match self.handler.handle(candle) {
-                    Ok(_) => (),
+                    Ok(()) => (),
                     Err(e) => return Err(e),                    
                 }
             }
@@ -108,6 +109,7 @@ mod tests {
     use std::env;
     use std::fs::OpenOptions;
     use std::io::Write;
+    use mockall::predicate::eq;
     use scopeguard::defer;
 
 
@@ -158,6 +160,7 @@ mod tests {
 
     #[ignore]
     #[test]
+    #[allow(clippy::unreadable_literal)]
     fn test_read_data() {
         // Arrange
         const TEXT_FILE_PATH: &str = "tests/example.txt";
@@ -174,8 +177,8 @@ mod tests {
             .open(TEXT_FILE_PATH)
             .expect("Failed to open file");
 
-        for data in datas.iter() {
-            writeln!(file, "{}", data).expect("Failed to write to file");
+        for data in &datas {
+            writeln!(file, "{data}").expect("Failed to write to file");
         }
 
         defer! {

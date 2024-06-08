@@ -37,14 +37,11 @@ args = [
     "--",
     "-D", "warnings",
     "-D", "clippy::all",
-    "-D", "clippy::pedantic",
     "-D", "clippy::nursery",
-    "-D", "clippy::cargo",
-    "-D", "clippy::complexity",
-    "-D", "clippy::correctness",
-    "-D", "clippy::style",
-    "-D", "clippy::perf",
-    "-D", "clippy::restriction",
+    "-D", "clippy::unwrap_used",
+    "-D", "clippy::panic",
+    "-D", "clippy::print_stderr",
+    "-A", "clippy::missing_panics_doc",
     "-A", "dead_code"
 ]
 

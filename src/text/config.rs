@@ -12,7 +12,7 @@ pub struct Config {
 impl Config {
     pub fn new() -> Result<Self, envconfig::Error> {
         dotenv().ok();
-        Config::init_from_env()
+        Self::init_from_env()
     }
 }
 
