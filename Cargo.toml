@@ -12,6 +12,7 @@ log = "0.4.14"
 env_logger = "0.9.0"
 async-std = { version = "1.10", features = ["attributes"] }
 chrono = "0.4"
+chrono-tz = "0.6"
 rinfluxdb-lineprotocol = { version = "0.2.0", features = ["client"] }
 rinfluxdb-influxql = { version = "0.2.0", features = ["client"] }
 mockall = "0.10" 
