@@ -23,7 +23,10 @@ struct Reader {
 
 impl Reader {
     pub fn new(config: Config, handler: Box<dyn Handler>) -> io::Result<Self> {
-        File::open(&config.path)?;
+        match File::open(&config.path) {
+            Ok(_) => (),
+            Err(e) => return Err(e),
+        };
         Ok(Reader { path: config.path, handler })
     }
 
@@ -76,7 +79,10 @@ impl Reader {
 
             if eof_reached {
                 thread::sleep(Duration::from_secs(1));
-                reader.seek(SeekFrom::Current(0))?;
+                match reader.stream_position() {
+                    Ok(_) => (),
+                    Err(e) => return Err(e),                    
+                }
             }
         }
 
@@ -153,7 +159,6 @@ mod tests {
             "3 BTCUSDT 200.0 300.0 150.0 250.0",
         ];
         let mut file = OpenOptions::new()
-            .write(true)
             .append(true)
             .create(true) // Create the file if it doesn't exist
             .open(TEXT_FILE_PATH)
