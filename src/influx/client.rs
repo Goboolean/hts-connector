@@ -9,9 +9,17 @@ struct Client {
 
 
 impl Client {
-    pub fn new(config: Config) -> Self {
-        let client = InfluxClient::new(config.url, config.bucket).with_token(config.token);
-        Client { client }
+    pub async fn new(config: Config) -> Result<Self, influxdb::Error> {
+        let client = InfluxClient::new(&config.url, &config.bucket).with_token(&config.token);
+        let new_client = Client { client };
+
+        new_client.ping().await?;
+
+        Ok(new_client)
+    }
+
+    pub async fn ping(&self) -> Result<(), influxdb::Error> {
+        self.client.ping().await.map(|_| ())
     }
 
     pub async fn insert_data(&self, candle: Candle) -> Result<(), influxdb::Error> {
@@ -36,7 +44,7 @@ mod tests {
     async fn test_insert_data() {
         // Arrange
         let config = Config::new().expect("Failed to create config");
-        let client = Client::new(config);
+        let client = Client::new(config).await.expect("Failed to create client");
 
         let candle = Candle {
             timestamp: Utc::now().timestamp() as u128,
