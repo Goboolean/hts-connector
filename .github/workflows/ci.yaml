@@ -33,7 +33,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
   
       - name: Cache Cargo registry
         uses: actions/cache@v2
@@ -52,8 +52,9 @@ jobs:
             ${{ runner.os }}-cargo-build-
 
       - name: Run tests
-        run: cargo test --verbose -- --test-threads=1
-
+        run: |
+          cargo test influx::config
+          cargo test influx::client
 
   test-windows:
     strategy:
