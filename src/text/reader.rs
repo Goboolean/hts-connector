@@ -13,7 +13,7 @@ use mockall::predicate::*;
 
 #[automock]
 pub trait Handler: Send + Sync  {
-    fn handle(&self, candle: Candle);
+    fn handle(&self, candle: Candle) -> Result<(), io::Error>;
 }
 
 struct Reader {
@@ -69,8 +69,11 @@ impl Reader {
                     low: parts[4].parse().unwrap(),
                     close: parts[5].parse().unwrap(),
                 };
-
-                self.handler.handle(candle);
+                
+                match self.handler.handle(candle) {
+                    Ok(_) => (),
+                    Err(e) => return Err(e),                    
+                }
             }
 
             if start.elapsed() >= duration {
@@ -203,15 +206,15 @@ mod tests {
         mock_handler.expect_handle()
             .with(eq(candles[0].clone()))
             .times(1)
-            .return_const(());
+            .returning(|_| Ok(()));
         mock_handler.expect_handle()
             .with(eq(candles[1].clone()))
             .times(1)
-            .return_const(());
+            .returning(|_| Ok(()));
         mock_handler.expect_handle()
             .with(eq(candles[2].clone()))
             .times(1)
-            .return_const(());
+            .returning(|_| Ok(()));
 
         let config = Config::new().expect("Failed to create config");
         let reader = Reader::new(config,  Box::new(mock_handler)).expect("Failed to create reader");
