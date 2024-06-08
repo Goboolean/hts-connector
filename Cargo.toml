@@ -17,3 +17,6 @@ rinfluxdb-influxql = { version = "0.2.0", features = ["client"] }
 
 [dev-dependencies]
 tokio = { version = "1", features = ["full"] }
+
+[package.metadata]
+test = true
