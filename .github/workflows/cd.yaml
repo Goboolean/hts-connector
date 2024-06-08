@@ -11,7 +11,7 @@ jobs:
   build:
     strategy:
       matrix:
-        platform: [windows-latest, ubuntu-latest]
+        platform: [windows-latest, macos-latest]
     runs-on: ${{ matrix.platform }}
 
     steps:
@@ -43,6 +43,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-cargo-build-
 
+      - name: Decrypt Environmebt
+        run: |
+          echo "${{ secrets.ENV }}" > .env
+
       - name: Build project
         run: cargo make build-release
 
@@ -53,8 +57,8 @@ jobs:
           name: hts-connector.exe
           path: ./target/release/hts_connector.exe
 
-      - name: Upload Release Asset (Ubuntu)
-        if: runner.os == 'Linux'
+      - name: Upload Release Asset (MacOS)
+        if: runner.os == 'MacOS'
         uses: actions/upload-artifact@v3
         with:
           name: hts-connector

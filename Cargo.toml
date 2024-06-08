@@ -24,3 +24,6 @@ mockall = "0.10"
 
 [package.metadata]
 test = true
+
+[build-dependencies]
+dotenv = "0.15"
