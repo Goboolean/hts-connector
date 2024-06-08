@@ -14,7 +14,6 @@ impl Client {
         Client { client }
     }
 
-    // Method to insert data
     pub async fn insert_data(&self, candle: Candle) -> Result<(), influxdb::Error> {
         let write_query = WriteQuery::new(influxdb::Timestamp::Seconds(candle.timestamp), candle.name)
             .add_field("open", candle.open)
@@ -28,6 +27,7 @@ impl Client {
 
 
 #[cfg(test)]
+#[cfg(not(target_os = "windows"))]
 mod tests {
     use super::*;
     use chrono::Utc;
@@ -49,6 +49,8 @@ mod tests {
 
         // Act
         let result = client.insert_data(candle).await;
+
+        println!("{:?}", result);
 
         // Assert
         assert!(result.is_ok());

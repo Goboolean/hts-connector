@@ -37,6 +37,7 @@ jobs:
     steps:
       - name: Issue Token
         run: |
+          docker ps
           OUTPUT=$(docker exec influxdb influx auth create --org org --read-buckets --write-buckets --description "New token for testing")
           INFLUXDB_TOKEN=$(echo ${OUTPUT} | grep 'New token for testing' | awk '{print $6}')
 
