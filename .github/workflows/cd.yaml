@@ -44,18 +44,18 @@ jobs:
             ${{ runner.os }}-cargo-build-
 
       - name: Build project
-        run: cargo build-release
+        run: make build-release
 
       - name: Upload Release Asset (Windows)
         if: runner.os == 'Windows'
         uses: actions/upload-artifact@v3
         with:
           name: hts-connector.exe
-          path: ./target/release/hts-connector.exe
+          path: ./target/release/hts_connector.exe
 
       - name: Upload Release Asset (Ubuntu)
         if: runner.os == 'Linux'
         uses: actions/upload-artifact@v3
         with:
           name: hts-connector
-          path: ./target/release/hts-connector
+          path: ./target/release/hts_connector
