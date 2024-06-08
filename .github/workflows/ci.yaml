@@ -74,7 +74,7 @@ jobs:
     
     env:
       INFLUXDB_URL: http://localhost:8086
-      INFLUXDB_DB: sample-bucket
+      INFLUXDB_BUCKET: sample-bucket
       INFLUXDB_TOKEN: token
       INFLUXDB_ORG: goboolean
 
