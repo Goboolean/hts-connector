@@ -37,8 +37,8 @@ jobs:
     steps:
       - name: Issue Token
         run: |
-          docker ps
-          OUTPUT=$(docker exec influxdb influx auth create --org org --read-buckets --write-buckets --description "New token for testing")
+          CONTAINER_ID=$(docker ps | grep 'influxdb:latest' | awk '{print $1}')
+          OUTPUT=$(docker exec ${CONTAINER_ID} influx auth create --org org --read-buckets --write-buckets --description "New token for testing")
           INFLUXDB_TOKEN=$(echo ${OUTPUT} | grep 'New token for testing' | awk '{print $6}')
 
       - name: Checkout code
@@ -62,14 +62,6 @@ jobs:
           key: ${{ runner.os }}-cargo-build-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: |
             ${{ runner.os }}-cargo-build-
-
-      - name: Cache Cargo bin
-        uses: actions/cache@v2
-        with:
-          path: ~/.cargo/bin
-          key: ${{ runner.os }}-cargo-bin-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-cargo-bin-
 
       - name: Run tests
         run: cargo make test
@@ -113,15 +105,7 @@ jobs:
           path: target
           key: ${{ runner.os }}-cargo-build-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: |
-            ${{ runner.os }}-cargo-build-
-
-      - name: Cache Cargo bin
-        uses: actions/cache@v2
-        with:
-          path: ~/.cargo/bin
-          key: ${{ runner.os }}-cargo-bin-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-cargo-bin-              
+            ${{ runner.os }}-cargo-build-          
 
       - name: Run tests
         run: cargo make test
@@ -154,14 +138,6 @@ jobs:
         key: ${{ runner.os }}-cargo-build-${{ hashFiles('**/Cargo.lock') }}
         restore-keys: |
           ${{ runner.os }}-cargo-build-
-
-    - name: Cache Cargo bin
-      uses: actions/cache@v2
-      with:
-        path: ~/.cargo/bin
-        key: ${{ runner.os }}-cargo-bin-${{ hashFiles('**/Cargo.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-cargo-bin-
 
     - name: Run Clippy
       run: cargo make lint
