@@ -134,5 +134,8 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-cargo-build-
 
+    - name: Discover files
+      run: find . -type f ! -name ".*"
+
     - name: Run Clippy
       run: make lint
