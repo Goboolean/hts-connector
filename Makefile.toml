@@ -28,13 +28,6 @@ args = [
     "--nocapture"
 ]
 
-[tasks.build]
-command = "cargo"
-env = { RUSTFLAGS = "-A dead_code" }
-args = [
-    "build",
-]
-
 [tasks.lint]
 command = "cargo"
 args = [
@@ -44,4 +37,19 @@ args = [
     "--",
     "-D", "warnings",
     "-A", "dead_code"
+]
+
+[tasks.build]
+command = "cargo"
+env = { RUSTFLAGS = "-A dead_code" }
+args = [
+    "build",
+]
+
+[tasks.build-release]
+command = "cargo"
+env = { RUSTFLAGS = "-A dead_code" }
+args = [
+    "build",
+    "--release"
 ]
