@@ -1,9 +1,11 @@
-use std::env;
-use dotenv::dotenv;
+
 
 fn main() {
     #[cfg(not(debug_assertions))]
     {
+        use std::env;
+        use dotenv::dotenv;
+
         dotenv().expect("Failed to read .env file");
 
         env::var("INFLUXDB_URL").expect("INFLUX_URL must be set");
