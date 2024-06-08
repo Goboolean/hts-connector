@@ -3,7 +3,7 @@ use std::io::{self, BufRead, BufReader, Seek};
 use std::thread;
 use std::time::{Duration, Instant};
 
-use crate::file::config::Config;
+use crate::text::config::Config;
 use crate::model::candle::Candle;
 
 use mockall::*;
