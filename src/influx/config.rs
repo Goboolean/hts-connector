@@ -28,8 +28,8 @@ mod tests {
     use super::*;
     use std::env;
 
-    #[test]
     #[ignore]
+    #[test]
     fn test_config_fail() {
         // Arrange
         env::remove_var("INFLUXDB_URL");
@@ -46,8 +46,8 @@ mod tests {
         assert!(config.is_err());
     }
 
-    #[test]
     #[ignore]
+    #[test]
     fn test_influx_config_success() {
         // Arrange
         const INFLUXDB_URL: &str = "http://localhost:8086";
