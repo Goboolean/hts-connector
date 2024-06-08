@@ -3,8 +3,8 @@
 fn main() {
     #[cfg(not(debug_assertions))]
     {
-        use std::env;
         use dotenv::dotenv;
+        use std::env;
 
         dotenv().expect("Failed to read .env file");
 

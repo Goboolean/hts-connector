@@ -1,7 +1,6 @@
-use serde::Deserialize;
-use envconfig::Envconfig;
 use dotenv::dotenv;
-
+use envconfig::Envconfig;
+use serde::Deserialize;
 
 #[derive(Debug, Deserialize, Envconfig)]
 pub struct Config {
@@ -12,7 +11,7 @@ pub struct Config {
     #[envconfig(from = "INFLUXDB_ORG")]
     pub org: String,
     #[envconfig(from = "INFLUXDB_BUCKET")]
-    pub bucket: String
+    pub bucket: String,
 }
 
 impl Config {
@@ -21,7 +20,6 @@ impl Config {
         Self::init_from_env()
     }
 }
-
 
 #[cfg(test)]
 mod tests {

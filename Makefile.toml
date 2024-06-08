@@ -49,6 +49,12 @@ args = [
     "-A", "dead_code"
 ]
 
+[tasks.fmt]
+command = "cargo"
+args = [
+    "fmt"
+]
+
 [tasks.build]
 command = "cargo"
 args = [

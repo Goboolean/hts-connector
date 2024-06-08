@@ -1,17 +1,19 @@
+use crate::influx::config::Config;
+use crate::model::candle::Candle;
 use influxdb::Client as InfluxClient;
 use influxdb::WriteQuery;
-use crate::model::candle::Candle;
-use crate::influx::config::Config;
 
 pub struct Client {
     client: InfluxClient,
 }
 
-
 impl Client {
     pub async fn new(config: Config) -> Result<Self, influxdb::Error> {
-        let influx_client = InfluxClient::new(&config.url, &config.bucket).with_token(&config.token);
-        let client = Self { client: influx_client };
+        let influx_client =
+            InfluxClient::new(&config.url, &config.bucket).with_token(&config.token);
+        let client = Self {
+            client: influx_client,
+        };
 
         client.ping().await?;
 
@@ -23,16 +25,16 @@ impl Client {
     }
 
     pub async fn insert_data(&self, candle: Candle) -> Result<(), influxdb::Error> {
-        let write_query = WriteQuery::new(influxdb::Timestamp::Seconds(candle.timestamp), candle.name)
-            .add_field("open", candle.open)
-            .add_field("high", candle.high)
-            .add_field("low", candle.low)
-            .add_field("close", candle.close);
+        let write_query =
+            WriteQuery::new(influxdb::Timestamp::Seconds(candle.timestamp), candle.name)
+                .add_field("open", candle.open)
+                .add_field("high", candle.high)
+                .add_field("low", candle.low)
+                .add_field("close", candle.close);
 
         self.client.query(&write_query).await.map(|_| ())
     }
 }
-
 
 #[cfg(test)]
 #[cfg(not(target_os = "windows"))]

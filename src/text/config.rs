@@ -1,12 +1,11 @@
-use serde::Deserialize;
-use envconfig::Envconfig;
 use dotenv::dotenv;
-
+use envconfig::Envconfig;
+use serde::Deserialize;
 
 #[derive(Debug, Deserialize, Envconfig)]
 pub struct Config {
     #[envconfig(from = "TEXT_FILE_PATH")]
-    pub path: String
+    pub path: String,
 }
 
 impl Config {
@@ -15,7 +14,6 @@ impl Config {
         Self::init_from_env()
     }
 }
-
 
 #[cfg(test)]
 mod tests {
