@@ -74,8 +74,8 @@ impl Reader {
                     name: parts[2].clone(),
                     open: parts[3].parse().expect("Failed to parse open"),
                     high: parts[4].parse().expect("Failed to parse high"),
-                    low: parts[5].parse().expect("Failed to parse low"),
-                    close: parts[6].parse().expect("Failed to parse close"),
+                    close: parts[5].parse().expect("Failed to parse close"),
+                    low: parts[6].parse().expect("Failed to parse low"),
                 };
 
                 match self.handler.handle(candle) {
@@ -185,24 +185,24 @@ mod tests {
                 name: "test".to_string(),
                 open: 368.850000,
                 high: 368.900000,
-                low: 368.750000,
-                close: 368.700000,
+                close: 368.750000,
+                low: 368.700000,
             },
             Candle {
                 timestamp: 1714450920,
                 name: "test".to_string(),
                 open: 368.800000,
                 high: 368.800000,
-                low: 368.700000,
-                close: 368.650000,
+                close: 368.700000,
+                low: 368.650000,
             },
             Candle {
                 timestamp: 1714450980,
                 name: "test".to_string(),
                 open: 368.750000,
                 high: 368.850000,
-                low: 368.800000,
-                close: 368.750000,
+                close: 368.800000,
+                low: 368.750000,
             },
         ];
 
