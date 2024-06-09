@@ -11,7 +11,7 @@ jobs:
   build:
     strategy:
       matrix:
-        platform: [windows-latest, macos-latest]
+        platform: [windows-latest]
     runs-on: ${{ matrix.platform }}
 
     steps:
@@ -50,16 +50,45 @@ jobs:
       - name: Build project
         run: cargo make build-release
 
-      - name: Upload Release Asset (Windows)
-        if: runner.os == 'Windows'
+      - name: Upload Release Asset
         uses: actions/upload-artifact@v3
         with:
-          name: hts-connector.exe
+          name: hts-connector-windows-latest.exe
           path: ./target/release/hts_connector.exe
 
-      - name: Upload Release Asset (MacOS)
-        if: runner.os == 'MacOS'
-        uses: actions/upload-artifact@v3
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v3
         with:
-          name: hts-connector
-          path: ./target/release/hts_connector
+          name: hts-connector-windows-latest.exe
+          path: .
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+          body: |
+            Changes in this release:
+            ${{ github.event.head_commit.message }}
+  
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./hts-connector-windows-latest.exe
+          asset_name: hts-connector-windows-latest.exe
+          asset_content_type: application/octet-stream
