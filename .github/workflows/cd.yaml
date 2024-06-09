@@ -60,9 +60,6 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
       - name: Download Build Artifact
         uses: actions/download-artifact@v3
         with:
@@ -76,13 +73,16 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
         with:
           tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
+          release_name: ${{ github.ref }}
           draft: false
           prerelease: false
           body: |
             Changes in this release:
             ${{ github.event.head_commit.message }}
-  
+
+      - name: Validation
+        run: ls
+            
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
         env:
