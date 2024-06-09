@@ -50,9 +50,6 @@ jobs:
       - name: Build project
         run: cargo make build-release
 
-      - name: Rename artifact
-        run: mv ./target/release/hts_connector.exe ./hts-connector-windows-latest.exe
-
       - name: Upload Release Asset
         uses: actions/upload-artifact@v3
         with:
@@ -66,7 +63,7 @@ jobs:
       - name: Download Build Artifact
         uses: actions/download-artifact@v3
         with:
-          name: hts-connector-windows-latest.exe
+          name: hts-connector-windows-latest
           path: .
 
       - name: Create GitHub Release
@@ -91,6 +88,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./hts-connector-windows-latest.exe
-          asset_name: hts-connector-windows-latest.exe
+          asset_path: ./hts-connector.exe
+          asset_name: hts-connector-windows-latest
           asset_content_type: application/octet-stream
