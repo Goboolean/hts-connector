@@ -74,8 +74,8 @@ impl Reader {
                     name: parts[2].clone(),
                     open: parts[3].parse().expect("Failed to parse open"),
                     high: parts[4].parse().expect("Failed to parse high"),
-                    low: parts[5].parse().expect("Failed to parse low"),
-                    close: parts[6].parse().expect("Failed to parse close"),
+                    close: parts[5].parse().expect("Failed to parse low"),
+                    low: parts[6].parse().expect("Failed to parse close"),
                 };
 
                 match self.handler.handle(candle) {
