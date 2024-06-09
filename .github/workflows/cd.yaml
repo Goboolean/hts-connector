@@ -50,10 +50,13 @@ jobs:
       - name: Build project
         run: cargo make build-release
 
+      - name: Rename artifact
+        run: mv ./target/release/hts_connector.exe ./hts-connector-windows-latest.exe
+
       - name: Upload Release Asset
         uses: actions/upload-artifact@v3
         with:
-          name: hts-connector-windows-latest.exe
+          name: hts-connector-windows-latest
           path: ./target/release/hts_connector.exe
 
   release:
@@ -77,7 +80,6 @@ jobs:
           draft: false
           prerelease: false
           body: |
-            Changes in this release:
             ${{ github.event.head_commit.message }}
 
       - name: Validation
