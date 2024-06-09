@@ -89,5 +89,5 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./hts_connector.exe
-          asset_name: hts-connector-windows-latest
+          asset_name: hts-connector.exe
           asset_content_type: application/octet-stream
