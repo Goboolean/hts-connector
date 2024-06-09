@@ -1,21 +1,19 @@
-use serde::Deserialize;
-use envconfig::Envconfig;
 use dotenv::dotenv;
-
+use envconfig::Envconfig;
+use serde::Deserialize;
 
 #[derive(Debug, Deserialize, Envconfig)]
 pub struct Config {
     #[envconfig(from = "TEXT_FILE_PATH")]
-    pub path: String
+    pub path: String,
 }
 
 impl Config {
     pub fn new() -> Result<Self, envconfig::Error> {
         dotenv().ok();
-        Config::init_from_env()
+        Self::init_from_env()
     }
 }
-
 
 #[cfg(test)]
 mod tests {
@@ -44,7 +42,6 @@ mod tests {
 
         // Act
         let config = Config::new().expect("Failed to create config");
-        println!("{:?}", config);
 
         // Assert
         assert_eq!(config.path, TEXT_FILE_PATH);

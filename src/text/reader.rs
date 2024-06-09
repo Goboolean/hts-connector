@@ -1,21 +1,17 @@
+use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
 use std::fs::{File, OpenOptions};
 use std::io::{self, BufRead, BufReader, Seek};
 use std::thread;
 use std::time::{Duration, Instant};
-use chrono::{NaiveDate, NaiveTime, NaiveDateTime};
 
-use crate::text::config::Config;
 use crate::model::candle::Candle;
+use crate::text::config::Config;
 
-use mockall::*;
-use mockall::predicate::*;
 use chrono_tz::Asia::Seoul;
-
-
-
+use mockall::automock;
 
 #[automock]
-pub trait Handler: Send + Sync  {
+pub trait Handler: Send + Sync {
     fn handle(&self, candle: Candle) -> Result<(), io::Error>;
 }
 
@@ -25,20 +21,23 @@ pub struct Reader {
 }
 
 impl Reader {
-    pub fn new(config: Config, handler: Box<dyn Handler>) -> io::Result<Self> {
+    pub fn new(config: Config, handler: Box<dyn Handler>) -> Result<Self, io::Error> {
         match File::open(&config.path) {
             Ok(_) => (),
             Err(e) => return Err(e),
         };
-        Ok(Reader { path: config.path, handler })
+        Ok(Self {
+            path: config.path,
+            handler,
+        })
     }
 
-    pub fn read_and_follow(&self, duration: Duration) -> io::Result<()> {
+    #[allow(clippy::unreadable_literal)]
+    #[allow(clippy::cast_sign_loss)]
+    pub fn read_and_follow(&self, duration: Duration) -> Result<(), io::Error> {
         let start = Instant::now();
 
-        let file = OpenOptions::new()
-            .read(true)
-            .open(&self.path)?;
+        let file = OpenOptions::new().read(true).open(&self.path)?;
         let mut reader = BufReader::new(file);
 
         loop {
@@ -60,28 +59,28 @@ impl Reader {
                 if parts.len() != 7 {
                     return Err(io::Error::new(
                         io::ErrorKind::InvalidData,
-                        format!("Expected 6 parts, found {}", parts.len())
+                        format!("Expected 6 parts, found {}", parts.len()),
                     ));
                 }
 
-                let date = NaiveDate::parse_from_str(&parts[0], "%Y-%m-%d").expect("Failed to parse date");
-                let time = NaiveTime::parse_from_str(&parts[1], "%H:%M:%S").expect("Failed to parse time");
+                let date =
+                    NaiveDate::parse_from_str(&parts[0], "%Y-%m-%d").expect("Failed to parse date");
+                let time =
+                    NaiveTime::parse_from_str(&parts[1], "%H:%M:%S").expect("Failed to parse time");
                 let datetime: NaiveDateTime = NaiveDateTime::new(date, time);
 
                 let candle = Candle {
                     timestamp: datetime.and_local_timezone(Seoul).unwrap().timestamp() as u128,
-                    name: parts[2].parse().unwrap(),
-                    open: parts[3].parse().unwrap(),
-                    high: parts[4].parse().unwrap(),
-                    low: parts[5].parse().unwrap(),
-                    close: parts[6].parse().unwrap(),
+                    name: parts[2].clone(),
+                    open: parts[3].parse().expect("Failed to parse open"),
+                    high: parts[4].parse().expect("Failed to parse high"),
+                    low: parts[5].parse().expect("Failed to parse low"),
+                    close: parts[6].parse().expect("Failed to parse close"),
                 };
 
-                println!("{:?}", candle);
-                
                 match self.handler.handle(candle) {
-                    Ok(_) => (),
-                    Err(e) => return Err(e),                    
+                    Ok(()) => (),
+                    Err(e) => return Err(e),
                 }
             }
 
@@ -93,7 +92,7 @@ impl Reader {
                 thread::sleep(Duration::from_secs(1));
                 match reader.stream_position() {
                     Ok(_) => (),
-                    Err(e) => return Err(e),                    
+                    Err(e) => return Err(e),
                 }
             }
         }
@@ -102,17 +101,15 @@ impl Reader {
     }
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
 
+    use mockall::predicate::eq;
+    use scopeguard::defer;
     use std::env;
     use std::fs::OpenOptions;
     use std::io::Write;
-    use scopeguard::defer;
-
-
 
     #[ignore]
     #[test]
@@ -122,13 +119,11 @@ mod tests {
         env::set_var("TEXT_FILE_PATH", TEXT_FILE_PATH);
 
         let mut mock_handler = MockHandler::new();
-        mock_handler.expect_handle()
-            .times(0);
-
+        mock_handler.expect_handle().times(0);
 
         // Act
         let config = Config::new().expect("Failed to create config");
-        let reader: Result<Reader, io::Error> = Reader::new(config,  Box::new(mock_handler));
+        let reader: Result<Reader, io::Error> = Reader::new(config, Box::new(mock_handler));
 
         // Assert
         assert!(reader.is_err());
@@ -143,12 +138,11 @@ mod tests {
         let file = File::create(TEXT_FILE_PATH).expect("Failed to create file");
 
         let mut mock_handler = MockHandler::new();
-        mock_handler.expect_handle()
-            .times(0);
+        mock_handler.expect_handle().times(0);
 
         // Act
         let config = Config::new().expect("Failed to create config");
-        let reader = Reader::new(config,  Box::new(mock_handler));
+        let reader = Reader::new(config, Box::new(mock_handler));
 
         // Assert
         assert!(reader.is_ok());
@@ -160,6 +154,7 @@ mod tests {
 
     #[ignore]
     #[test]
+    #[allow(clippy::unreadable_literal)]
     fn test_read_data() {
         // Arrange
         const TEXT_FILE_PATH: &str = "tests/example.txt";
@@ -176,8 +171,8 @@ mod tests {
             .open(TEXT_FILE_PATH)
             .expect("Failed to open file");
 
-        for data in datas.iter() {
-            writeln!(file, "{}", data).expect("Failed to write to file");
+        for data in &datas {
+            writeln!(file, "{data}").expect("Failed to write to file");
         }
 
         defer! {
@@ -212,21 +207,24 @@ mod tests {
         ];
 
         let mut mock_handler = MockHandler::new();
-        mock_handler.expect_handle()
+        mock_handler
+            .expect_handle()
             .with(eq(candles[0].clone()))
             .times(1)
             .returning(|_| Ok(()));
-        mock_handler.expect_handle()
+        mock_handler
+            .expect_handle()
             .with(eq(candles[1].clone()))
             .times(1)
             .returning(|_| Ok(()));
-        mock_handler.expect_handle()
+        mock_handler
+            .expect_handle()
             .with(eq(candles[2].clone()))
             .times(1)
             .returning(|_| Ok(()));
 
         let config = Config::new().expect("Failed to create config");
-        let reader = Reader::new(config,  Box::new(mock_handler)).expect("Failed to create reader");
+        let reader = Reader::new(config, Box::new(mock_handler)).expect("Failed to create reader");
         let duration = Duration::from_secs(1);
 
         // Act

@@ -1,3 +1,3 @@
-pub mod config;
-pub mod client;
 pub mod adapter;
+pub mod client;
+pub mod config;

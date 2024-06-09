@@ -1,30 +1,33 @@
 [package]
 name = "hts_connector"
 version = "0.1.0"
+authors = ["@mulmuri"]
 edition = "2021"
+license = "MIT"
+repository = "https://github.com/Goboolean/hts-connector"
+keywords = ["goboolean", "quant", "rust"]
+categories = ["goboolean", "quant"]
+description = "A connector that fetches data from the HTS service and dumps it into InfluxDB"
 
 [dependencies]
-influxdb = "0.7.2"
-serde = { version = "1.0", features = ["derive"] }
-envconfig = "0.10.0"
+async-std = "1.12.0"
+chrono = "0.4.38"
+chrono-tz = "0.9.0"
 dotenv = "0.15.0"
-log = "0.4.14"
-env_logger = "0.9.0"
-async-std = { version = "1.10", features = ["attributes"] }
-chrono = "0.4"
-chrono-tz = "0.6"
-rinfluxdb-lineprotocol = { version = "0.2.0", features = ["client"] }
-rinfluxdb-influxql = { version = "0.2.0", features = ["client"] }
-mockall = "0.10" 
-scopeguard = "1.1"
-tokio = { version = "1", features = ["full"] }
+env_logger = "0.11.3"
+envconfig = "0.10.0"
+influxdb = "0.7.2"
+log = "0.4.21"
+mockall = "0.12.1"
+rinfluxdb-influxql = "0.2.0"
+rinfluxdb-lineprotocol = "0.2.0"
+scopeguard = "1.2.0"
+serde = "1.0.203"
+tokio = { version = "1.38.0", features = ["full"] }
 
 [dev-dependencies]
-tokio = { version = "1", features = ["full"] }
-mockall = "0.10" 
-
-[package.metadata]
-test = true
+mockall = "0.12.1"
+tokio = { version = "1.38.0", features = ["full"] }
 
 [build-dependencies]
 dotenv = "0.15"

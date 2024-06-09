@@ -36,7 +36,23 @@ args = [
     "--all-features",
     "--",
     "-D", "warnings",
+    "-D", "clippy::all",
+    "-D", "clippy::nursery",
+    "-D", "clippy::unwrap_used",
+    "-D", "clippy::panic",
+    "-D", "clippy::print_stderr",
+    "-D", "clippy::complexity",
+    "-D", "clippy::correctness",
+    "-D", "clippy::style",
+    "-D", "clippy::perf",
+    "-A", "clippy::missing_panics_doc",
     "-A", "dead_code"
+]
+
+[tasks.fmt]
+command = "cargo"
+args = [
+    "fmt"
 ]
 
 [tasks.build]
