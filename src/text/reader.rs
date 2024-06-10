@@ -71,7 +71,7 @@ impl Reader {
 
                 let candle = Candle {
                     timestamp: datetime.and_local_timezone(Seoul).unwrap().timestamp() as u128,
-                    name: parts[2].clone(),
+                    event: parts[2].clone(),
                     open: parts[3].parse().expect("Failed to parse open"),
                     high: parts[4].parse().expect("Failed to parse high"),
                     close: parts[5].parse().expect("Failed to parse close"),
@@ -182,7 +182,7 @@ mod tests {
         let candles: [Candle; 3] = [
             Candle {
                 timestamp: 1714450860,
-                name: "test".to_string(),
+                event: "test".to_string(),
                 open: 368.850000,
                 high: 368.900000,
                 close: 368.750000,
@@ -190,7 +190,7 @@ mod tests {
             },
             Candle {
                 timestamp: 1714450920,
-                name: "test".to_string(),
+                event: "test".to_string(),
                 open: 368.800000,
                 high: 368.800000,
                 close: 368.700000,
@@ -198,7 +198,7 @@ mod tests {
             },
             Candle {
                 timestamp: 1714450980,
-                name: "test".to_string(),
+                event: "test".to_string(),
                 open: 368.750000,
                 high: 368.850000,
                 close: 368.800000,

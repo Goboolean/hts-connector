@@ -25,7 +25,7 @@ impl Handler for InfluxHandler {
                 format!("Failed to create runtime: {e}"),
             )
         })?;
-        match runtime.block_on(self.client.insert_data(candle)) {
+        match runtime.block_on(self.client.insert_candle(candle)) {
             Ok(()) => Ok(()),
             Err(e) => Err(io::Error::new(
                 io::ErrorKind::Other,

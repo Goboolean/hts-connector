@@ -24,9 +24,9 @@ impl Client {
         self.client.ping().await.map(|_| ())
     }
 
-    pub async fn insert_data(&self, candle: Candle) -> Result<(), influxdb::Error> {
+    pub async fn insert_candle(&self, candle: Candle) -> Result<(), influxdb::Error> {
         let write_query =
-            WriteQuery::new(influxdb::Timestamp::Seconds(candle.timestamp), candle.name)
+            WriteQuery::new(influxdb::Timestamp::Seconds(candle.timestamp), candle.event)
                 .add_field("open", candle.open)
                 .add_field("high", candle.high)
                 .add_field("low", candle.low)
@@ -50,7 +50,7 @@ mod tests {
 
         let candle = Candle {
             timestamp: 1714450980,
-            name: "BTCUSDT".to_string(),
+            event: "BTCUSDT".to_string(),
             open: 100.0,
             high: 200.0,
             low: 50.0,
@@ -58,7 +58,7 @@ mod tests {
         };
 
         // Act
-        let result = client.insert_data(candle).await;
+        let result = client.insert_candle(candle).await;
 
         // Assert
         assert!(result.is_ok());
