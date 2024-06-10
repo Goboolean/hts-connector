@@ -1,5 +1,5 @@
 use crate::influx::config::Config;
-use crate::model::candle::Candle;
+use crate::model::{candle::Candle, indicator::Indicator};
 use influxdb::Client as InfluxClient;
 use influxdb::WriteQuery;
 
@@ -34,6 +34,14 @@ impl Client {
 
         self.client.query(&write_query).await.map(|_| ())
     }
+
+    pub async fn insert_indicator(&self, indicator: Indicator) -> Result<(), influxdb::Error> {
+        let write_query =
+            WriteQuery::new(influxdb::Timestamp::Seconds(indicator.timestamp), indicator.event)
+                .add_field(indicator.property, indicator.value);
+        
+        self.client.query(&write_query).await.map(|_| ())
+    }
 }
 
 #[cfg(test)]
@@ -43,7 +51,7 @@ mod tests {
     use super::*;
 
     #[tokio::test]
-    async fn test_insert_data() {
+    async fn test_insert_candle() {
         // Arrange
         let config = Config::new().expect("Failed to create config");
         let client = Client::new(config).await.expect("Failed to create client");
@@ -59,6 +67,26 @@ mod tests {
 
         // Act
         let result = client.insert_candle(candle).await;
+
+        // Assert
+        assert!(result.is_ok());
+    }
+
+    #[tokio::test]
+    async fn test_insert_indicator() {
+        // Arrange
+        let config = Config::new().expect("Failed to create config");
+        let client = Client::new(config).await.expect("Failed to create client");
+
+        let indicator = Indicator {
+            timestamp: 1714450980,
+            event: "BTCUSDT".to_string(),
+            property: "rsi".to_string(),
+            value: 70,
+        };
+
+        // Act
+        let result = client.insert_indicator(indicator).await;
 
         // Assert
         assert!(result.is_ok());
