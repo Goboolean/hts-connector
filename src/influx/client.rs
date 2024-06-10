@@ -36,10 +36,12 @@ impl Client {
     }
 
     pub async fn insert_indicator(&self, indicator: Indicator) -> Result<(), influxdb::Error> {
-        let write_query =
-            WriteQuery::new(influxdb::Timestamp::Seconds(indicator.timestamp), indicator.event)
-                .add_field(indicator.property, indicator.value);
-        
+        let write_query = WriteQuery::new(
+            influxdb::Timestamp::Seconds(indicator.timestamp),
+            indicator.event,
+        )
+        .add_field(indicator.property, indicator.value);
+
         self.client.query(&write_query).await.map(|_| ())
     }
 }
