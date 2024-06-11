@@ -5,8 +5,6 @@ use std::error::Error;
 
 use crate::model::{candle::Candle, indicator::Indicator};
 
-
-
 fn parse_f64_to_i64(input: f64) -> Result<i64, Box<dyn Error>> {
     if input.fract() != 0.0 {
         return Err(format!("Expected integer, found {}", input).into());
@@ -61,11 +59,9 @@ pub fn parse_indicator(input: String) -> Result<Indicator, Box<dyn Error>> {
     Ok(indicator)
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
-
 
     #[test]
     fn test_parse_f64_to_i64_success() {
@@ -76,7 +72,8 @@ mod tests {
         let result = parse_f64_to_i64(input);
 
         // Assert
-        assert_eq!(result.unwrap(), 10);
+        assert!(result.is_ok());
+        assert_eq!(result.expect("Failed to parse f64 to i64"), 10);
     }
 
     #[test]
@@ -108,7 +105,8 @@ mod tests {
         let result = parse_candle(input);
 
         // Assert
-        assert_eq!(result.unwrap(), expect);
+        assert!(result.is_ok());
+        assert_eq!(result.expect("Failed to parse candle"), expect);
     }
 
     #[test]
@@ -138,13 +136,14 @@ mod tests {
         let result = parse_indicator(input);
 
         // Assert
-        assert_eq!(result.unwrap(), expect);
+        assert!(result.is_ok());
+        assert_eq!(result.expect("Failed to parse indicator"), expect);
     }
 
     #[test]
     fn test_parse_indicator_fail() {
         // Arrange
-        let input = "2021-01-01 00:00:00 이벤트 속성 -70.0".to_string();
+        let input = "2021-01-01 00:00:00 이벤트 -70.0".to_string();
 
         // Act
         let result = parse_indicator(input);

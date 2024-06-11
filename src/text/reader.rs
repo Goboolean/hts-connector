@@ -54,7 +54,6 @@ impl Reader {
                     Err(e) => return Err(e),
                 }
             } {
-
                 match (parse_candle(line.clone()), parse_indicator(line.clone())) {
                     (Ok(candle), _) => {
                         self.handler.handle_candle(candle)?;
@@ -63,7 +62,6 @@ impl Reader {
                         self.handler.handle_indicator(indicator)?;
                     }
                     (Err(_), Err(_)) => {
-                        eprintln!("Failed to parse line: {}", line);
                     }
                 }
             }

@@ -32,7 +32,10 @@ impl Handler for InfluxHandler {
         }
     }
 
-    fn handle_indicator(&self,indicator:crate::model::indicator::Indicator) -> Result<(),io::Error> {
+    fn handle_indicator(
+        &self,
+        indicator: crate::model::indicator::Indicator,
+    ) -> Result<(), io::Error> {
         let runtime = Runtime::new().map_err(|e| {
             io::Error::new(
                 io::ErrorKind::Other,
