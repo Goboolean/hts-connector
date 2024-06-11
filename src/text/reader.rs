@@ -1,18 +1,18 @@
-use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
 use std::fs::{File, OpenOptions};
 use std::io::{self, BufRead, BufReader, Seek};
 use std::thread;
 use std::time::{Duration, Instant};
 
-use crate::model::candle::Candle;
+use crate::model::{candle::Candle, indicator::Indicator};
 use crate::text::config::Config;
+use crate::text::parser::{parse_candle, parse_indicator};
 
-use chrono_tz::Asia::Seoul;
 use mockall::automock;
 
 #[automock]
 pub trait Handler: Send + Sync {
-    fn handle(&self, candle: Candle) -> Result<(), io::Error>;
+    fn handle_candle(&self, candle: Candle) -> Result<(), io::Error>;
+    fn handle_indicator(&self, indicator: Indicator) -> Result<(), io::Error>;
 }
 
 pub struct Reader {
@@ -54,33 +54,17 @@ impl Reader {
                     Err(e) => return Err(e),
                 }
             } {
-                let parts: Vec<String> = line.split_whitespace().map(|s| s.to_string()).collect();
 
-                if parts.len() != 7 {
-                    return Err(io::Error::new(
-                        io::ErrorKind::InvalidData,
-                        format!("Expected 6 parts, found {}", parts.len()),
-                    ));
-                }
-
-                let date =
-                    NaiveDate::parse_from_str(&parts[0], "%Y-%m-%d").expect("Failed to parse date");
-                let time =
-                    NaiveTime::parse_from_str(&parts[1], "%H:%M:%S").expect("Failed to parse time");
-                let datetime: NaiveDateTime = NaiveDateTime::new(date, time);
-
-                let candle = Candle {
-                    timestamp: datetime.and_local_timezone(Seoul).unwrap().timestamp() as u128,
-                    event: parts[2].clone(),
-                    open: parts[3].parse().expect("Failed to parse open"),
-                    high: parts[4].parse().expect("Failed to parse high"),
-                    close: parts[5].parse().expect("Failed to parse close"),
-                    low: parts[6].parse().expect("Failed to parse low"),
-                };
-
-                match self.handler.handle(candle) {
-                    Ok(()) => (),
-                    Err(e) => return Err(e),
+                match (parse_candle(line.clone()), parse_indicator(line.clone())) {
+                    (Ok(candle), _) => {
+                        self.handler.handle_candle(candle)?;
+                    }
+                    (_, Ok(indicator)) => {
+                        self.handler.handle_indicator(indicator)?;
+                    }
+                    (Err(_), Err(_)) => {
+                        eprintln!("Failed to parse line: {}", line);
+                    }
                 }
             }
 
@@ -119,7 +103,8 @@ mod tests {
         env::set_var("TEXT_FILE_PATH", TEXT_FILE_PATH);
 
         let mut mock_handler = MockHandler::new();
-        mock_handler.expect_handle().times(0);
+        mock_handler.expect_handle_candle().times(0);
+        mock_handler.expect_handle_indicator().times(0);
 
         // Act
         let config = Config::new().expect("Failed to create config");
@@ -138,7 +123,8 @@ mod tests {
         let file = File::create(TEXT_FILE_PATH).expect("Failed to create file");
 
         let mut mock_handler = MockHandler::new();
-        mock_handler.expect_handle().times(0);
+        mock_handler.expect_handle_candle().times(0);
+        mock_handler.expect_handle_indicator().times(0);
 
         // Act
         let config = Config::new().expect("Failed to create config");
@@ -208,17 +194,17 @@ mod tests {
 
         let mut mock_handler = MockHandler::new();
         mock_handler
-            .expect_handle()
+            .expect_handle_candle()
             .with(eq(candles[0].clone()))
             .times(1)
             .returning(|_| Ok(()));
         mock_handler
-            .expect_handle()
+            .expect_handle_candle()
             .with(eq(candles[1].clone()))
             .times(1)
             .returning(|_| Ok(()));
         mock_handler
-            .expect_handle()
+            .expect_handle_candle()
             .with(eq(candles[2].clone()))
             .times(1)
             .returning(|_| Ok(()));
