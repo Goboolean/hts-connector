@@ -126,12 +126,12 @@ mod tests {
     #[test]
     fn test_parse_indicator_success() {
         // Arrange
-        let input = "2021-01-01 00:00:00 BTCUSDT RSI 70.0".to_string();
+        let input = "2021-01-01 00:00:00 이벤트 속성 -70.0".to_string();
         let expect = Indicator {
             timestamp: 1609426800,
-            event: "BTCUSDT".to_string(),
-            property: "RSI".to_string(),
-            value: 70,
+            event: "이벤트".to_string(),
+            property: "속성".to_string(),
+            value: -70,
         };
 
         // Act
@@ -144,7 +144,7 @@ mod tests {
     #[test]
     fn test_parse_indicator_fail() {
         // Arrange
-        let input = "2021-01-01 00:00:00 BTCUSDT RSI".to_string();
+        let input = "2021-01-01 00:00:00 이벤트 속성 -70.0".to_string();
 
         // Act
         let result = parse_indicator(input);
