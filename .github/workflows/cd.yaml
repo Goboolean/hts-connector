@@ -45,6 +45,7 @@ jobs:
       - name: Decrypt Environmebt
         run: |
           echo "${{ secrets.ENV }}" > .env
+          rm .env
 
       - name: Build project
         run: cargo make build-release
