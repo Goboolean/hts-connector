@@ -61,7 +61,7 @@ args = [
     "build",
 ]
 
-[tasks.build-release]
+[tasks.release]
 command = "cargo"
 args = [
     "build",

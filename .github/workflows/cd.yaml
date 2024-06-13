@@ -45,10 +45,9 @@ jobs:
       - name: Decrypt Environmebt
         run: |
           echo "${{ secrets.ENV }}" > .env
-          rm .env
 
       - name: Build project
-        run: cargo make build-release
+        run: cargo make release
 
       - name: Upload Release Asset
         uses: actions/upload-artifact@v3
