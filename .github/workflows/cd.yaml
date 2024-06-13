@@ -6,7 +6,6 @@ on:
       - v*
   workflow_dispatch:
 
-
 jobs:
   build:
     strategy:
@@ -48,7 +47,7 @@ jobs:
           echo "${{ secrets.ENV }}" > .env
 
       - name: Build project
-        run: cargo make build-release
+        run: cargo make release
 
       - name: Upload Release Asset
         uses: actions/upload-artifact@v3
@@ -76,18 +75,16 @@ jobs:
           release_name: ${{ github.ref }}
           draft: false
           prerelease: false
-          body: |
-            ${{ github.event.head_commit.message }}
 
-      - name: Validation
-        run: ls
-            
+      - name: Compress Asset
+        run: zip hts-connector.zip hts_connector.exe
+
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./hts_connector.exe
-          asset_name: hts-connector.exe
+          asset_path: ./hts-connector.zip
+          asset_name: hts-connector.zip
           asset_content_type: application/octet-stream
