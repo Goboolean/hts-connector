@@ -56,13 +56,15 @@ impl Reader {
             } {
                 match (parse_candle(line.clone()), parse_indicator(line.clone())) {
                     (Ok(candle), _) => {
+                        println!("{:?}", candle);
                         self.handler.handle_candle(candle)?;
                     }
                     (_, Ok(indicator)) => {
+                        println!("{:?}", indicator);
                         self.handler.handle_indicator(indicator)?;
                     }
                     (Err(_), Err(_)) => {
-
+                        println!("Failed to parse line: {}", line.trim_end());
                     }
                 }
             }
