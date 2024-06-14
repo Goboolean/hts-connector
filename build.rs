@@ -2,6 +2,10 @@
 
 fn main() {
     use std::env;
+    #[cfg(not(debug_assertions))]
+    {
+        dotenv::dotenv().expect("Failed to load .env file");
+    }
 
     let influxdb_url = env::var("INFLUXDB_URL");
     let influxdb_bucket = env::var("INFLUXDB_BUCKET");
