@@ -1,17 +1,31 @@
-use dotenv::dotenv;
 use envconfig::Envconfig;
 use serde::Deserialize;
+use std::error::Error;
+use std::env;
+
 
 #[derive(Debug, Deserialize, Envconfig)]
 pub struct Config {
-    #[envconfig(from = "TEXT_FILE_PATH")]
     pub path: String,
 }
 
 impl Config {
-    pub fn new() -> Result<Self, envconfig::Error> {
-        dotenv().ok();
-        Self::init_from_env()
+    fn retrieve_env_var(key: &str) -> Result<String, Box<dyn Error>> {
+        env::var(key).map_err(|e| {
+            Box::new(e) as Box<dyn Error>
+        })
+    }
+
+    pub fn new() -> Result<Self, Box<dyn Error>> {
+        Ok(Self {
+            path: Self::retrieve_env_var("TEXT_FILE_PATH")?,
+        })
+    }
+
+    pub fn init() -> Result<Self, Box<dyn Error>> {
+        Ok(Self {
+            path: env!("TEXT_FILE_PATH").to_string(),
+        })
     }
 }
 
@@ -27,7 +41,7 @@ mod tests {
         env::remove_var("TEXT_FILE_PATH");
 
         // Act
-        let config: Result<Config, envconfig::Error> = Config::new();
+        let config = Config::new();
 
         // Assert
         assert!(config.is_err());

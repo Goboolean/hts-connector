@@ -8,17 +8,20 @@ use std::time::Duration;
 use tokio::runtime::Runtime;
 
 fn main() {
+    let path: &'static str = env!("INFLUXDB_URL");
+    println!("the $PATH variable at the time of compiling was: {path}");
+
     let runtime = Runtime::new().expect("Failed to create runtime");
 
     let client = runtime.block_on(async {
-        let config = InfluxConfig::new().expect("Failed to create config");
+        let config = InfluxConfig::init().expect("Failed to create config");
         InfluxClient::new(config)
             .await
             .expect("Failed to create client")
     });
     let adapter = InfluxHandler::new(client);
 
-    let config = TextConfig::new().expect("Failed to create config");
+    let config = TextConfig::init().expect("Failed to create config");
     let reader = TextReader::new(config, Box::new(adapter)).expect("Failed to create reader");
 
     let one_day = Duration::from_secs(24 * 60 * 60);

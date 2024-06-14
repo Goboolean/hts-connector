@@ -62,6 +62,7 @@ impl Reader {
                         self.handler.handle_indicator(indicator)?;
                     }
                     (Err(_), Err(_)) => {
+
                     }
                 }
             }
