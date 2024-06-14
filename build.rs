@@ -4,7 +4,7 @@ fn main() {
     use dotenv::dotenv;
     use std::env;
 
-    dotenv().expect("Failed to read .env file");
+    dotenv().unwrap();
 
     let influxdb_url = env::var("INFLUXDB_URL");
     let influxdb_bucket = env::var("INFLUXDB_BUCKET");
