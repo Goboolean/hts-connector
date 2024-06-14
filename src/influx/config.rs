@@ -1,23 +1,40 @@
-use dotenv::dotenv;
 use envconfig::Envconfig;
 use serde::Deserialize;
 
+use std::error::Error;
+use std::env;
+
 #[derive(Debug, Deserialize, Envconfig)]
 pub struct Config {
-    #[envconfig(from = "INFLUXDB_URL")]
     pub url: String,
-    #[envconfig(from = "INFLUXDB_TOKEN")]
     pub token: String,
-    #[envconfig(from = "INFLUXDB_ORG")]
     pub org: String,
-    #[envconfig(from = "INFLUXDB_BUCKET")]
     pub bucket: String,
 }
 
 impl Config {
-    pub fn new() -> Result<Self, envconfig::Error> {
-        dotenv().ok();
-        Self::init_from_env()
+    fn retrieve_env_var(key: &str) -> Result<String, Box<dyn Error>> {
+        env::var(key).map_err(|e| {
+            Box::new(e) as Box<dyn Error>
+        })
+    }
+
+    pub fn new() -> Result<Self, Box<dyn Error>> {
+        Ok(Self {
+            url: Self::retrieve_env_var("INFLUXDB_URL")?,
+            token: Self::retrieve_env_var("INFLUXDB_TOKEN")?,
+            org: Self::retrieve_env_var("INFLUXDB_ORG")?,
+            bucket: Self::retrieve_env_var("INFLUXDB_BUCKET")?,
+        })
+    }
+
+    pub fn init() -> Result<Self, Box<dyn Error>> {
+        Ok(Self {
+            url: env!("INFLUXDB_URL").to_string(),
+            token: env!("INFLUXDB_TOKEN").to_string(),
+            org: env!("INFLUXDB_ORG").to_string(),
+            bucket: env!("INFLUXDB_BUCKET").to_string(),
+        })
     }
 }
 
