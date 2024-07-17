@@ -25,14 +25,26 @@ impl Client {
     }
 
     pub async fn insert_candle(&self, candle: Candle) -> Result<(), influxdb::Error> {
-        let write_query =
+        let point =
             WriteQuery::new(influxdb::Timestamp::Seconds(candle.timestamp), candle.event)
                 .add_field("open", candle.open)
                 .add_field("high", candle.high)
                 .add_field("low", candle.low)
                 .add_field("close", candle.close);
 
-        self.client.query(&write_query).await.map(|_| ())
+        self.client.query(&point).await.map(|_| ())
+    }
+
+    pub async fn insert_candles(&self, candles: Vec<Candle>) -> Result<(), influxdb::Error> {
+        let points: Vec<WriteQuery> = candles.into_iter().map(|candle| {
+            WriteQuery::new(influxdb::Timestamp::Seconds(candle.timestamp), candle.event)
+                .add_field("open", candle.open)
+                .add_field("high", candle.high)
+                .add_field("low", candle.low)
+                .add_field("close", candle.close)
+            }).collect();
+    
+        self.client.query(&points).await.map(|_| ())
     }
 
     pub async fn insert_indicator(&self, indicator: Indicator) -> Result<(), influxdb::Error> {
@@ -43,6 +55,15 @@ impl Client {
         .add_field(indicator.property, indicator.value);
 
         self.client.query(&write_query).await.map(|_| ())
+    }
+
+    pub async fn insert_indicators(&self, indicators: Vec<Indicator>) -> Result<(), influxdb::Error> {
+        let points: Vec<WriteQuery> = indicators.into_iter().map(|indicator| {
+            WriteQuery::new(influxdb::Timestamp::Seconds(indicator.timestamp), indicator.event)
+                .add_field(indicator.property, indicator.value)
+            }).collect();
+    
+        self.client.query(&points).await.map(|_| ())
     }
 }
 
@@ -55,7 +76,7 @@ mod tests {
     #[tokio::test]
     async fn test_insert_candle() {
         // Arrange
-        let config = Config::new().expect("Failed to create config");
+        let config = Config::new().expect("Failed to create config");        
         let client = Client::new(config).await.expect("Failed to create client");
 
         let candle = Candle {
@@ -69,6 +90,38 @@ mod tests {
 
         // Act
         let result = client.insert_candle(candle).await;
+
+        // Assert
+        assert!(result.is_ok());
+    }
+
+    #[tokio::test]
+    async fn test_insert_candles() {
+        // Arrange
+        let config = Config::new().expect("Failed to create config");
+        let client = Client::new(config).await.expect("Failed to create client");
+
+        let candles = vec![
+            Candle {
+                timestamp: 1714450980,
+                event: "BTCUSDT".to_string(),
+                open: 100.0,
+                high: 200.0,
+                low: 50.0,
+                close: 150.0,
+            },
+            Candle {
+                timestamp: 1714451980,
+                event: "BTCUSDT".to_string(),
+                open: 100.0,
+                high: 200.0,
+                low: 50.0,
+                close: 150.0,
+            },
+        ];
+
+        // Act
+        let result = client.insert_candles(candles).await;
 
         // Assert
         assert!(result.is_ok());
@@ -89,6 +142,34 @@ mod tests {
 
         // Act
         let result = client.insert_indicator(indicator).await;
+
+        // Assert
+        assert!(result.is_ok());
+    }
+
+    #[tokio::test]
+    async fn test_insert_indicators() {
+        // Arrange
+        let config = Config::new().expect("Failed to create config");
+        let client = Client::new(config).await.expect("Failed to create client");
+
+        let indicators = vec![
+            Indicator {
+                timestamp: 1714450980,
+                event: "BTCUSDT".to_string(),
+                property: "rsi".to_string(),
+                value: 70,
+            },
+            Indicator {
+                timestamp: 1714451980,
+                event: "BTCUSDT".to_string(),
+                property: "rsi".to_string(),
+                value: 70,
+            },
+        ];
+
+        // Act
+        let result = client.insert_indicators(indicators).await;
 
         // Assert
         assert!(result.is_ok());
