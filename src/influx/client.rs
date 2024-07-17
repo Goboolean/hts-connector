@@ -48,13 +48,13 @@ impl Client {
     }
 
     pub async fn insert_indicator(&self, indicator: Indicator) -> Result<(), influxdb::Error> {
-        let write_query = WriteQuery::new(
+        let point = WriteQuery::new(
             influxdb::Timestamp::Seconds(indicator.timestamp),
             indicator.event,
         )
         .add_field(indicator.property, indicator.value);
 
-        self.client.query(&write_query).await.map(|_| ())
+        self.client.query(&point).await.map(|_| ())
     }
 
     pub async fn insert_indicators(&self, indicators: Vec<Indicator>) -> Result<(), influxdb::Error> {
